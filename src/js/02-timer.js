@@ -1,6 +1,7 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 //import { convertMs } from './convertMs';
+import Notiflix from 'notiflix';
 
 // Funkcja do konwersji milisekund na dni, godziny, minuty i sekundy
 function convertMs(ms) {
@@ -33,11 +34,18 @@ const flatpickrOptions = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
+  /* onClose(selectedDates) {
     selectedTime = selectedDates[0].getTime();
     startButton.disabled = selectedTime <= Date.now();
     if (startButton.disabled) {
       alert('Please choose a date in the future.');
+    }
+  }, */
+  onClose(selectedDates) {
+    selectedTime = selectedDates[0].getTime();
+    startButton.disabled = selectedTime <= Date.now();
+    if (startButton.disabled) {
+      Notiflix.Notify.failure('Please choose a date in the future.');
     }
   },
 };
