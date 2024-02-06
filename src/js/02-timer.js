@@ -1,6 +1,21 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-import { convertMs } from './convertMs';
+//import { convertMs } from './convertMs';
+
+// Funkcja do konwersji milisekund na dni, godziny, minuty i sekundy
+function convertMs(ms) {
+  const second = 1000;
+  const minute = second * 60;
+  const hour = minute * 60;
+  const day = hour * 24;
+
+  const days = Math.floor(ms / day);
+  const hours = Math.floor((ms % day) / hour);
+  const minutes = Math.floor(((ms % day) % hour) / minute);
+  const seconds = Math.floor((((ms % day) % hour) % minute) / second);
+
+  return { days, hours, minutes, seconds };
+}
 
 // Wybór elementów DOM
 const startButton = document.querySelector('[data-start]');
@@ -10,37 +25,45 @@ const minutesSpan = document.querySelector('[data-minutes]');
 const secondsSpan = document.querySelector('[data-seconds]');
 
 let timerId = null;
+let selectedTime = null;
 
-// Inicjalizacja wyboru daty
-flatpickr('#datetime-picker', {
+// Opcje konfiguracyjne dla Flatpickr
+const flatpickrOptions = {
   enableTime: true,
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const selectedTime = selectedDates[0].getTime();
-    const now = Date.now();
-
-    if (selectedTime < now) {
-      alert('Proszę wybrać datę w przyszłości.');
-      startButton.disabled = true;
-    } else {
-      startButton.disabled = false;
+    selectedTime = selectedDates[0].getTime();
+    startButton.disabled = selectedTime <= Date.now();
+    if (startButton.disabled) {
+      alert('Please choose a date in the future.');
     }
   },
-});
+};
 
-// Funkcja startująca odliczanie
-function startCountdown() {
-  const endTime = new Date(
-    document.getElementById('datetime-picker').value
-  ).getTime();
+// Inicjalizacja Flatpickr
+flatpickr('#datetime-picker', flatpickrOptions);
+
+// Funkcje pomocnicze
+const addLeadingZero = value => String(value).padStart(2, '0');
+
+const updateTimerDisplay = ({ days, hours, minutes, seconds }) => {
+  daysSpan.textContent = addLeadingZero(days);
+  hoursSpan.textContent = addLeadingZero(hours);
+  minutesSpan.textContent = addLeadingZero(minutes);
+  secondsSpan.textContent = addLeadingZero(seconds);
+};
+
+// Funkcja rozpoczynająca odliczanie
+const startCountdown = () => {
+  if (!selectedTime) return;
 
   startButton.disabled = true;
 
   timerId = setInterval(() => {
     const currentTime = Date.now();
-    const timeLeft = endTime - currentTime;
+    const timeLeft = selectedTime - currentTime;
 
     if (timeLeft <= 0) {
       clearInterval(timerId);
@@ -50,23 +73,7 @@ function startCountdown() {
     const timeComponents = convertMs(timeLeft);
     updateTimerDisplay(timeComponents);
   }, 1000);
-}
+};
 
-// Aktualizacja wyświetlania czasu
-function updateTimerDisplay({ days, hours, minutes, seconds }) {
-  daysSpan.textContent = addLeadingZero(days);
-  hoursSpan.textContent = addLeadingZero(hours);
-  minutesSpan.textContent = addLeadingZero(minutes);
-  secondsSpan.textContent = addLeadingZero(seconds);
-}
-
-// Dodawanie zera do liczb mniejszych niż 10
-function addLeadingZero(value) {
-  return String(value).padStart(2, '0');
-}
-
-// Nasłuchiwanie zdarzenia kliknięcia
+// Nasłuchiwacze zdarzeń
 startButton.addEventListener('click', startCountdown);
-
-// Opcjonalny eksport funkcji
-export { startCountdown };
