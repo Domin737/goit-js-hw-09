@@ -1,7 +1,6 @@
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 import { convertMs } from './convertMs';
-import throttle from 'lodash.throttle';
 
 // Wybór elementów DOM
 const startButton = document.querySelector('[data-start]');
@@ -11,6 +10,7 @@ const minutesSpan = document.querySelector('[data-minutes]');
 const secondsSpan = document.querySelector('[data-seconds]');
 
 let timerId = null;
+let selectedTime = null;
 
 // Inicjalizacja wyboru daty
 flatpickr('#datetime-picker', {
@@ -19,9 +19,9 @@ flatpickr('#datetime-picker', {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    const selectedTime = selectedDates[0].getTime();
-    if (selectedTime < Date.now()) {
-      alert('Proszę wybrać datę w przyszłości.');
+    selectedTime = selectedDates[0].getTime();
+    if (selectedTime <= Date.now()) {
+      alert('Please choose a date in the future.');
       startButton.disabled = true;
     } else {
       startButton.disabled = false;
@@ -31,24 +31,22 @@ flatpickr('#datetime-picker', {
 
 // Rozpoczęcie odliczania
 const startCountdown = () => {
-  const endTime = new Date(
-    document.getElementById('datetime-picker').value
-  ).getTime();
+  if (selectedTime) {
+    startButton.disabled = true;
 
-  startButton.disabled = true;
+    timerId = setInterval(() => {
+      const currentTime = Date.now();
+      const timeLeft = selectedTime - currentTime;
 
-  timerId = setInterval(() => {
-    const currentTime = Date.now();
-    const timeLeft = endTime - currentTime;
+      if (timeLeft <= 0) {
+        clearInterval(timerId);
+        return;
+      }
 
-    if (timeLeft <= 0) {
-      clearInterval(timerId);
-      return;
-    }
-
-    const timeComponents = convertMs(timeLeft);
-    updateTimerDisplay(timeComponents);
-  }, 1000);
+      const timeComponents = convertMs(timeLeft);
+      updateTimerDisplay(timeComponents);
+    }, 1000);
+  }
 };
 
 // Aktualizacja wyświetlacza z nowym czasem
@@ -63,13 +61,4 @@ const updateTimerDisplay = ({ days, hours, minutes, seconds }) => {
 const addLeadingZero = value => String(value).padStart(2, '0');
 
 // Nasłuchiwacze zdarzeń
-startButton.addEventListener('click', throttle(startCountdown, 1000));
-
-// Ta funkcja zatrzymuje odliczanie i resetuje przycisk start
-const stopCountdown = () => {
-  clearInterval(timerId);
-  startButton.disabled = false;
-};
-
-// Eksport funkcji (opcjonalnie)
-export { startCountdown, stopCountdown };
+startButton.addEventListener('click', startCountdown);
