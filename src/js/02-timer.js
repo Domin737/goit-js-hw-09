@@ -2,6 +2,8 @@ import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 //import { convertMs } from './convertMs';
 import Notiflix from 'notiflix';
+import confirmDatePlugin from 'flatpickr/dist/plugins/confirmDate/confirmDate';
+import 'flatpickr/dist/plugins/confirmDate/confirmDate.css';
 
 // Funkcja do konwersji milisekund na dni, godziny, minuty i sekundy
 function convertMs(ms) {
@@ -34,13 +36,6 @@ const flatpickrOptions = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  /* onClose(selectedDates) {
-    selectedTime = selectedDates[0].getTime();
-    startButton.disabled = selectedTime <= Date.now();
-    if (startButton.disabled) {
-      alert('Please choose a date in the future.');
-    }
-  }, */
   onClose(selectedDates) {
     selectedTime = selectedDates[0].getTime();
     startButton.disabled = selectedTime <= Date.now();
@@ -48,6 +43,15 @@ const flatpickrOptions = {
       Notiflix.Notify.failure('Please choose a date in the future.');
     }
   },
+  // Plugin potwierdzania wyboru daty
+  plugins: [
+    new confirmDatePlugin({
+      confirmIcon: "<i class='fa fa-check'></i>", // Ikona przycisku / Można użyć ikony Font Awesome
+      confirmText: 'OK', // Tekst na przycisku zatwierdzania
+      showAlways: false, // Ustawienie na true spowoduje, że przycisk będzie wyświetlany cały czas
+      theme: 'light', // lub "dark"
+    }),
+  ],
 };
 
 // Inicjalizacja Flatpickr
