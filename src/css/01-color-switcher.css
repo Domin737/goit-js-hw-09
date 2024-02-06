@@ -1,0 +1,79 @@
+/* Reset default styles */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+/* Apply a background color and center text for the entire body */
+body {
+  font-family: 'Arial', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  background-color: #f7f7f7;
+}
+
+/* Center the 'Go back' link at the top of the page */
+.go-back {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.go-back a {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  background-color: #e7e7e7;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.go-back a:hover {
+  background-color: #d7d7d7;
+}
+
+/* Style the buttons */
+button {
+  padding: 10px 20px;
+  margin: 5px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+/* Specific styles for start button */
+[data-start] {
+  background-color: #4caf50;
+  color: white;
+}
+
+/* Specific styles for stop button */
+[data-stop] {
+  background-color: #f44336;
+  color: white;
+}
+
+/* Hover effects for buttons */
+button:hover {
+  transform: scale(1.05);
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Disabled button style */
+button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
