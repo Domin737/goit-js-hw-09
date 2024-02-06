@@ -10,7 +10,6 @@ const minutesSpan = document.querySelector('[data-minutes]');
 const secondsSpan = document.querySelector('[data-seconds]');
 
 let timerId = null;
-let selectedTime = null;
 
 // Inicjalizacja wyboru daty
 flatpickr('#datetime-picker', {
@@ -19,9 +18,11 @@ flatpickr('#datetime-picker', {
   defaultDate: new Date(),
   minuteIncrement: 1,
   onClose(selectedDates) {
-    selectedTime = selectedDates[0].getTime();
-    if (selectedTime <= Date.now()) {
-      alert('Please choose a date in the future.');
+    const selectedTime = selectedDates[0].getTime();
+    const now = Date.now();
+
+    if (selectedTime < now) {
+      alert('Proszę wybrać datę w przyszłości.');
       startButton.disabled = true;
     } else {
       startButton.disabled = false;
@@ -29,36 +30,43 @@ flatpickr('#datetime-picker', {
   },
 });
 
-// Rozpoczęcie odliczania
-const startCountdown = () => {
-  if (selectedTime) {
-    startButton.disabled = true;
+// Funkcja startująca odliczanie
+function startCountdown() {
+  const endTime = new Date(
+    document.getElementById('datetime-picker').value
+  ).getTime();
 
-    timerId = setInterval(() => {
-      const currentTime = Date.now();
-      const timeLeft = selectedTime - currentTime;
+  startButton.disabled = true;
 
-      if (timeLeft <= 0) {
-        clearInterval(timerId);
-        return;
-      }
+  timerId = setInterval(() => {
+    const currentTime = Date.now();
+    const timeLeft = endTime - currentTime;
 
-      const timeComponents = convertMs(timeLeft);
-      updateTimerDisplay(timeComponents);
-    }, 1000);
-  }
-};
+    if (timeLeft <= 0) {
+      clearInterval(timerId);
+      return;
+    }
 
-// Aktualizacja wyświetlacza z nowym czasem
-const updateTimerDisplay = ({ days, hours, minutes, seconds }) => {
+    const timeComponents = convertMs(timeLeft);
+    updateTimerDisplay(timeComponents);
+  }, 1000);
+}
+
+// Aktualizacja wyświetlania czasu
+function updateTimerDisplay({ days, hours, minutes, seconds }) {
   daysSpan.textContent = addLeadingZero(days);
   hoursSpan.textContent = addLeadingZero(hours);
   minutesSpan.textContent = addLeadingZero(minutes);
   secondsSpan.textContent = addLeadingZero(seconds);
-};
+}
 
-// Dodawanie zera na początku do liczb
-const addLeadingZero = value => String(value).padStart(2, '0');
+// Dodawanie zera do liczb mniejszych niż 10
+function addLeadingZero(value) {
+  return String(value).padStart(2, '0');
+}
 
-// Nasłuchiwacze zdarzeń
+// Nasłuchiwanie zdarzenia kliknięcia
 startButton.addEventListener('click', startCountdown);
+
+// Opcjonalny eksport funkcji
+export { startCountdown };
