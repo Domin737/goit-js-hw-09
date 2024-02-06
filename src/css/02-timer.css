@@ -1,0 +1,61 @@
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #f3f3f3;
+  text-align: center;
+  padding-top: 50px;
+}
+
+.timer {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.value {
+  font-size: 4rem;
+  font-weight: bold;
+  color: #333;
+  background-color: #fff;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.label {
+  margin-top: 8px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+#datetime-picker {
+  font-size: 1.2rem;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+}
+
+button[data-start] {
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  color: white;
+  background-color: #28a745;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button[data-start]:hover {
+  background-color: #218838;
+}
+
+button[data-start]:disabled {
+  background-color: #94d3a2;
+  cursor: default;
+}
